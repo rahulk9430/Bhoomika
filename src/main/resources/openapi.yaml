@@ -1,0 +1,117 @@
+openapi: 3.0.1
+info:
+  title: User Management API
+  description: This API handles user authentication and registration.
+  version: 1.0.0
+  contact:
+    name: sopra
+    email: sopra@gmail.com
+    url: https://www.soprasteria.com
+  license:
+    name: MIT License
+    url: https://choosealicense.com/licenses/mit/
+servers:
+  - url: ${openapi.dev-url}
+    description: Server URL in Development environment
+  - url: ${openapi.prod-url}
+    description: Server URL in Production environment
+paths:
+  /customers/signup:
+    post:
+      summary: Sign up a new user
+      requestBody:
+        description: User details required for sign-up
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '200':
+          description: User created and JWT generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+      tags:
+        - Authentication
+
+  /customers/signin:
+    post:
+      summary: Sign in an existing user
+      requestBody:
+        description: User credentials for sign-in
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful sign-in and JWT generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+      tags:
+        - Authentication
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        fullName:
+          type: string
+      required:
+        - email
+        - password
+        - fullName
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+      required:
+        - email
+        - password
+
+    AuthResponse:
+      type: object
+      properties:
+        jwt:
+          type: string
+        message:
+          type: string
+      required:
+        - jwt
+        - message
